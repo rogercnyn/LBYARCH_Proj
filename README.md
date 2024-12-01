@@ -1,4 +1,8 @@
-# Pixels n' Performance: Grayscale Pixel Converter 
+# Pixels n' Performance: A Grayscale Pixel Converter 
+
+### S12 - G4
+- Roger Canayon Jr.
+- Ryan Vasquez
 
 ## Introduction
 
@@ -35,11 +39,11 @@ The video provides a walkthrough of the code and a brief explanation of its func
    - The program prints the output image in 8-bit unsigned integer format (i.e., pixel values in the range of 0--255).  
    - If performance benchmarking is chosen, execution times are logged and can be exported to a file for analysis.
 
-### Notable Features:
+### Key Features:
 
 - **Assembly-optimized Conversion:** The core of the pixel conversion is implemented in assembly to maximize performance, particularly when processing large images or multiple runs.  
 - **Performance Benchmarking:** The program tracks and records the time taken for processing, helping to assess the efficiency of the grayscale conversion operation.
-- **Text File Saving: Records of recent performance benchmarks and processing metadata are automatically saved to a text file for easy review and analysis.
+- **Text File Saving:** Records of recent performance benchmarks and processing metadata are automatically saved to a text file for easy review and analysis.
 
 ---
 
