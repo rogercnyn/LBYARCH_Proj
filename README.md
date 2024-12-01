@@ -6,6 +6,11 @@ The **Grayscale Pixel Converter** is a program that demonstrates the conversion 
 
 The program allows you to either input grayscale values manually, generate random inputs, or benchmark the performance of the conversion process over multiple runs.
 
+## Demonstration
+You can watch a demonstration of how to run the program in the following video: [LINK HERE]
+
+The video also provides a walkthrough of the code and a brief explanation of its functionality.
+
 ## Explanation
 
 ### How the program works
@@ -18,7 +23,7 @@ The program allows you to either input grayscale values manually, generate rando
 2. **Conversion Process:**  
    - The program calls a function written in assembly (`imgCvtGrayDoubleToInt`) for each pixel. The function performs the following steps:  
      - Multiplies the input double value by 255 to scale the grayscale intensity to an 8-bit range.  
-     - Truncates the scaled value to an integer.  
+     - Converts the scaled value to an integer.  
      - Clamps the value to ensure it stays within the range `[0, 255]`.  
      - Returns the final 8-bit value, which represents the grayscale intensity of the pixel.
 
@@ -57,7 +62,13 @@ The table below summarizes the recorded execution times for different image size
 - **Large Images (1000x1000):** The average time is significantly higher for larger images. The variance in execution times suggests that memory access patterns, CPU cache usage, and potential context switching play a more critical role at this scale.
 
 ---
+## Correctness Check
+To ensure the accuracy of the conversion process, we manually computed the conversion of various grayscale values and cross-checked them against the program's output. These computations and outputs were documented in a Google Sheets file, which includes screenshots and detailed results for verification. The cross-checking process confirmed that the program accurately converts double-precision floating-point grayscale values to 8-bit unsigned integers within the expected range of 0 to 255.
 
+You can view the detailed documentation and verification results in the Google Sheets file here: 
+https://docs.google.com/spreadsheets/d/1Yo1X0QvaNczk_kXvabrvhfB57kqX3-3ft6oAIExDvi4/edit?usp=sharing 
+
+---
 ## Conclusion
 
 This grayscale pixel converter showcases the power of assembly language for optimizing critical operations and the flexibility of the C programming language for managing input/output and performance measurement. The program not only performs the necessary pixel conversion but also benchmarks the efficiency of the underlying algorithm across multiple test cases.
