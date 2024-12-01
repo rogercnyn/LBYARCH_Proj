@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <windows.h>
 
-
-
 // Declare the updated assembly function
 extern unsigned char imgCvtGrayDoubleToInt(double value);
 
@@ -50,7 +48,7 @@ int main() {
     printf("Enter choice: ");
     scanf_s("%d", &choice);
 
-    if (choice < 1|| choice > 4) {
+    if (choice < 1 || choice > 4) {
         printf("Invalid choice.\n");
         return 1;
     }
@@ -101,8 +99,7 @@ int main() {
         }
         printf("\n");
     }
-    
-   
+
     // Time the assembly function
     LARGE_INTEGER frequency, start, end;
     double elapsedTime;
@@ -122,75 +119,102 @@ int main() {
     elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
 
     printf("[1] Total time elapsed: %.10f seconds\n", elapsedTime);
-	if (choice != 3 && choice != 4) {
+
+    if (choice != 3 && choice != 4) {
         printf("\nOutput Image (8-bit Integer):\n");
         printImageUint8(output, width, height);
 
-		// Free allocated memory
-		free(input);
-		free(output);
-		return 0;
-	}
+        // Free allocated memory
+        free(input);
+        free(output);
+        return 0;
+    }
 
-    // For choice 3,4 
+    // For choice 3 and 4 
     double recordedTimes[30];
     recordedTimes[0] = elapsedTime;
     double avg_time = 0 + elapsedTime;
-	char filename[30];
+    char filename[30];
 
-    // Repeat the process 29 more times and record the times
-    for (int i = 1; i < 30; i++) {
-        srand((unsigned int)time(NULL));
-
-		generateRandomInput(input, width, height);
-		QueryPerformanceCounter(&start); // Start timing
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				int idx = i * width + j;
-				output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Process each pixel once
-			}
-		}
-		QueryPerformanceCounter(&end); // End timing
-		elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
-		printf("[%d] Total time elapsed: %.10f seconds\n", i+1,elapsedTime);
-		recordedTimes[i] = elapsedTime;
-		avg_time += elapsedTime;
-	}
-    avg_time /= 30;
-   
+    // For choice 3, run the same fixed input matrix 30 times
     if (choice == 3) {
-        sprintf_s(filename, 30, "tests/fixed_%dx%d.txt", height, width);
-    }
-    else if (choice == 4) {
-        sprintf_s(filename, 30, "tests/random_%dx%d.txt", height, width);
-    }
-  
-	// Export to file, overwrites if file already exists
-    FILE* file = fopen(filename, "w");
-    
-	// Write input to file if fixed input
-        if (choice == 3) {
-            fprintf(file, "Input Matrix:\n");
+        // Repeat the process 29 more times with the same fixed input
+        for (int i = 1; i < 30; i++) {
+            QueryPerformanceCounter(&start); // Start timing
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-				    int idx = i * width + j;
-                    fprintf(file, "%.2f ", input[idx]); 
+                    int idx = i * width + j;
+                    output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Process the fixed input again
                 }
-                fprintf(file, "\n");
             }
-
-            fprintf(file, "\n"); 
+            QueryPerformanceCounter(&end); // End timing
+            elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+            printf("[%d] Total time elapsed: %.10f seconds\n", i + 1, elapsedTime);
+            recordedTimes[i] = elapsedTime;
+            avg_time += elapsedTime;
         }
+        avg_time /= 30;
 
-    fprintf(file, "Average Time: %.10f seconds\n", avg_time);
-    fprintf(file, "All Recorded Times:\n");
-    for (int i = 0; i < 30; i++) {
-        fprintf(file, "[%d] %.10f\n", i+1, recordedTimes[i]);
+        // Set file name and export the results
+        sprintf_s(filename, 30, "tests/fixed_%dx%d.txt", height, width);
+
+        // Export to file, overwrites if file already exists
+        FILE* file = fopen(filename, "w");
+
+        // Write input to file if fixed input
+        fprintf(file, "Input Matrix:\n");
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int idx = i * width + j;
+                fprintf(file, "%.2f ", input[idx]);
+            }
+            fprintf(file, "\n");
+        }
+        fprintf(file, "\n");
+
+        fprintf(file, "Average Time: %.10f seconds\n", avg_time);
+        fprintf(file, "All Recorded Times:\n");
+        for (int i = 0; i < 30; i++) {
+            fprintf(file, "[%d] %.10f\n", i + 1, recordedTimes[i]);
+        }
+        fclose(file);
+        printf("Execution Times exported to '%s'.\n", filename);
     }
-    fclose(file);
-    printf("Execution Times exported to '%s'.\n", filename);
-   
-	fclose(file);
+
+    // For choice 4, run 30 randomly generated matrices
+    if (choice == 4) {
+        for (int i = 1; i < 30; i++) {
+            srand((unsigned int)time(NULL));
+
+            generateRandomInput(input, width, height);
+            QueryPerformanceCounter(&start); // Start timing
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int idx = i * width + j;
+                    output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Process each pixel once
+                }
+            }
+            QueryPerformanceCounter(&end); // End timing
+            elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+            printf("[%d] Total time elapsed: %.10f seconds\n", i + 1, elapsedTime);
+            recordedTimes[i] = elapsedTime;
+            avg_time += elapsedTime;
+        }
+        avg_time /= 30;
+
+        sprintf_s(filename, 30, "tests/random_%dx%d.txt", height, width);
+
+        // Export to file, overwrites if file already exists
+        FILE* file = fopen(filename, "w");
+
+        fprintf(file, "Average Time: %.10f seconds\n", avg_time);
+        fprintf(file, "All Recorded Times:\n");
+        for (int i = 0; i < 30; i++) {
+            fprintf(file, "[%d] %.10f\n", i + 1, recordedTimes[i]);
+        }
+        fclose(file);
+        printf("Execution Times exported to '%s'.\n", filename);
+    }
 
     // Free allocated memory
     free(input);
