@@ -9,7 +9,7 @@ extern unsigned char imgCvtGrayDoubleToInt(double value);
 
 void generateRandomInput(double* input, int width, int height) {
     for (int i = 0; i < width * height; i++) {
-        input[i] = (double)rand() / RAND_MAX;
+        input[i] = (double)(rand() % 101) / 100;
     }
 }
 
@@ -33,17 +33,28 @@ void printImageUint8(unsigned char* image, int width, int height) {
 
 int main() {
     int width, height;
+    int choice;
+
+    printf("Pixels and Prose kineso\n"); 
+    printf("[1] to input values yourself\n[2] randomly generate inputs\n");
+	printf("Enter choice: ");
+    scanf_s("%d", &choice);
+
+	if (choice != 1 && choice != 2) {
+		printf("Invalid choice.\n");
+		return 1;
+	}
 
     // Input image dimensions with safety checks
-    printf("Enter image width: ");
-    if (scanf_s("%d", &width) != 1 || width <= 0) {
-        printf("Invalid input for width.\n");
+    printf("\nEnter image height: ");
+    if (scanf_s("%d", &height) != 1 || height <= 0) {
+        printf("Invalid input for height.\n");
         return 1;
     }
 
-    printf("Enter image height: ");
-    if (scanf_s("%d", &height) != 1 || height <= 0) {
-        printf("Invalid input for height.\n");
+    printf("Enter image width: ");
+    if (scanf_s("%d", &width) != 1 || width <= 0) {
+        printf("Invalid input for width.\n");
         return 1;
     }
 
@@ -55,12 +66,28 @@ int main() {
         return 1;
     }
 
-    // Initialize random input values
-    srand((unsigned int)time(NULL));
-    generateRandomInput(input, width, height);
 
-    printf("\nInput Image (Double Precision):\n");
-    printImageDouble(input, width, height);
+    if (choice == 1) {
+        // Accept input values from stdin
+        printf("\nEnter %d values for the image:\n", width * height);
+        for (int i = 0; i < width * height; i++) {
+            if (scanf_s("%lf", &input[i]) != 1) {
+                printf("Invalid input for image values.\n");
+                free(input);
+                free(output);
+                return 1;
+            }
+        }
+        printf("\n");
+    }
+    if (choice == 2) {
+        // Initialize random input values
+        srand((unsigned int)time(NULL));
+        generateRandomInput(input, width, height);
+        printf("\nInput Image (Double Precision):\n");
+        printImageDouble(input, width, height);
+        printf("\n");
+    }
 
     // Time the assembly function
     LARGE_INTEGER frequency, start, end;
@@ -81,8 +108,6 @@ int main() {
     elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
 
     printf("Total time elapsed: %.6f seconds\n", elapsedTime);
-
-
     printf("\nOutput Image (8-bit Integer):\n");
     printImageUint8(output, width, height);
 

@@ -21,7 +21,7 @@ imgCvtGrayDoubleToInt:
     mulsd xmm0, xmm1                ; xmm0 *= 255.0
 
     ; Round to the nearest integer
-    roundsd xmm0, xmm0, 0           ; Round xmm0 to nearest integer (mode 0)
+    ; roundsd xmm0, xmm0, 0           ; Round xmm0 to nearest integer (mode 0)
 
     ; Convert to integer (truncate after rounding)
     cvttsd2si eax, xmm0             ; eax = (int)xmm0
@@ -30,6 +30,7 @@ imgCvtGrayDoubleToInt:
     cmp eax, 255
     jle not_overflow
     mov eax, 255                    ; Cap to 255
+
 not_overflow:
     cmp eax, 0
     jge not_underflow
@@ -39,4 +40,5 @@ not_underflow:
     ; Return the result in AL (lower 8 bits of EAX)
     mov rsp, rbp
     pop rbp
+    
     ret
