@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <windows.h>
 
-// Declare the assembly function
-extern void imgCvtGrayDoubleToInt(double* input, unsigned char* output, int width, int height);
+// Declare the updated assembly function
+extern unsigned char imgCvtGrayDoubleToInt(double value);
 
 void generateRandomInput(double* input, int width, int height) {
     for (int i = 0; i < width * height; i++) {
@@ -49,15 +49,9 @@ int main() {
 
     // Allocate memory for input and output arrays
     double* input = malloc(width * height * sizeof(double));
-    if (!input) {
-        printf("Memory allocation failed for input.\n");
-        return 1;
-    }
-
     unsigned char* output = malloc(width * height * sizeof(unsigned char));
-    if (!output) {
-        printf("Memory allocation failed for output.\n");
-        free(input);
+    if (!input || !output) {
+        printf("Memory allocation failed.\n");
         return 1;
     }
 
@@ -74,8 +68,14 @@ int main() {
     QueryPerformanceFrequency(&frequency);
 
     QueryPerformanceCounter(&start);
-    for (int i = 0; i < 30; i++) {
-        imgCvtGrayDoubleToInt(input, output, width, height);
+    printf("Calling assembly for each pixel\n");
+    for (int repeat = 0; repeat < 30; repeat++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int idx = i * width + j;
+                output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Updated function call
+            }
+        }
     }
     QueryPerformanceCounter(&end);
 

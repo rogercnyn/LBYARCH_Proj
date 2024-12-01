@@ -4,39 +4,17 @@ section .data
 section .text
 bits 64
 default rel
+
 global imgCvtGrayDoubleToInt
+extern printf
 
 imgCvtGrayDoubleToInt:
     ; Function arguments:
-    ; rdi = input (pointer to double array)
-    ; rsi = output (pointer to uint8_t array)
-    ; rdx = width
-    ; rcx = height
+    ; xmm0 = input (double value)
 
     push rbp
     mov rbp, rsp
-    sub rsp, 32                     ; Reserve stack space
-
-    ; Check input and output pointers
-    test rdi, rdi                   ; Check if input pointer is null
-    jz null_pointer_error
-    test rsi, rsi                   ; Check if output pointer is null
-    jz null_pointer_error
-
-    ; Compute total pixels
-    imul rdx, rcx                   ; rdx = width * height
-
-    ; Initialize loop counter
-    xor r8, r8                      ; r8 = 0 (loop counter)
-
-convert_loop:
-    ; Check if we've processed all pixels
-    cmp r8, rdx
-    jge end_loop
-
-    ; Load the current double value
-    mov rax, rdi                    ; Load input array pointer into rax
-    movsd xmm0, qword [rax + r8 * 8]  ; xmm0 = input[r8]
+    sub rsp, 16                     ; Reserve stack space
 
     ; Scale the value by 255
     lea rax, [rel factor]           ; Load address of 'factor'
@@ -56,21 +34,7 @@ not_overflow:
     mov eax, 0                      ; Cap to 0
 not_underflow:
 
-    ; Store the result
-    mov rax, rsi                    ; Load output array pointer into rax
-    mov byte [rax + r8], al         ; output[r8] = (uint8_t)eax
-
-    ; Increment loop counter
-    inc r8
-    jmp convert_loop
-
-end_loop:
-    mov rsp, rbp
-    pop rbp
-    ret
-
-null_pointer_error:
-    int3                             ; Trigger breakpoint for debugging
+    ; Return the result in AL (lower 8 bits of EAX)
     mov rsp, rbp
     pop rbp
     ret
