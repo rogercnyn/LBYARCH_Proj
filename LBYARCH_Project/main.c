@@ -65,25 +65,28 @@ int main() {
     // Time the assembly function
     LARGE_INTEGER frequency, start, end;
     double elapsedTime;
+
     QueryPerformanceFrequency(&frequency);
 
-    QueryPerformanceCounter(&start);
+    QueryPerformanceCounter(&start); // Start timing
     printf("Calling assembly for each pixel\n");
-    for (int repeat = 0; repeat < 30; repeat++) {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int idx = i * width + j;
-                output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Updated function call
-            }
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            int idx = i * width + j;
+            output[idx] = imgCvtGrayDoubleToInt(input[idx]); // Process each pixel once
         }
     }
-    QueryPerformanceCounter(&end);
+    QueryPerformanceCounter(&end); // End timing
 
-    elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart / 30;
-    printf("\nAverage execution time: %.10f seconds\n", elapsedTime);
+    elapsedTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+
+    printf("Total time elapsed: %.6f seconds\n", elapsedTime);
+
 
     printf("\nOutput Image (8-bit Integer):\n");
     printImageUint8(output, width, height);
+
+    printf("\nAverage execution time: %.10f seconds\n", elapsedTime);
 
     // Free allocated memory
     free(input);

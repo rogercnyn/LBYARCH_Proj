@@ -6,11 +6,10 @@ bits 64
 default rel
 
 global imgCvtGrayDoubleToInt
-extern printf
 
 imgCvtGrayDoubleToInt:
     ; Function arguments:
-    ; xmm0 = input (double value)
+    ; xmm0 = input (double value, grayscale intensity in range [0.0, 1.0])
 
     push rbp
     mov rbp, rsp
@@ -21,7 +20,10 @@ imgCvtGrayDoubleToInt:
     movsd xmm1, qword [rax]         ; xmm1 = 255.0
     mulsd xmm0, xmm1                ; xmm0 *= 255.0
 
-    ; Convert to integer
+    ; Round to the nearest integer
+    roundsd xmm0, xmm0, 0           ; Round xmm0 to nearest integer (mode 0)
+
+    ; Convert to integer (truncate after rounding)
     cvttsd2si eax, xmm0             ; eax = (int)xmm0
 
     ; Clamp the value to 0-255
