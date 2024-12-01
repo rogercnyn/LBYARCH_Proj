@@ -154,7 +154,8 @@ int main() {
             avg_time += elapsedTime;
         }
         avg_time /= 30;
-
+        printf("\nAverage Time: %.10f seconds\n", avg_time);
+        printf("====================================\n");
         // Set file name and export the results
         sprintf_s(filename, 30, "tests/fixed_%dx%d.txt", height, width);
 
@@ -201,7 +202,9 @@ int main() {
             avg_time += elapsedTime;
         }
         avg_time /= 30;
-
+        printf("\nAverage Time: %.10f seconds\n", avg_time);
+        printf("====================================\n");
+        
         sprintf_s(filename, 30, "tests/random_%dx%d.txt", height, width);
 
         // Export to file, overwrites if file already exists
