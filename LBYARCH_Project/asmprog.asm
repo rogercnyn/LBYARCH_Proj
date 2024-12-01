@@ -20,8 +20,11 @@ imgCvtGrayDoubleToInt:
     movsd xmm1, qword [rax]         ; xmm1 = 255.0
     mulsd xmm0, xmm1                ; xmm0 *= 255.0
 
+    roundsd xmm0, xmm0, 0
+
+
     ; Convert to integer (truncate/floor)
-    cvttsd2si eax, xmm0             ; eax = (int)xmm0
+    cvttsd2si  eax, xmm0             ; eax = (int)xmm0
 
     ; Clamp the value to 0-255
     cmp eax, 255
